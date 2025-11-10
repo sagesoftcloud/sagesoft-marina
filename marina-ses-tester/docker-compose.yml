@@ -1,0 +1,57 @@
+services:
+  web:
+    build: .
+    container_name: marina_ses_web
+    ports:
+      - "8080:80"
+    volumes:
+      - ./src:/var/www/html
+      - ./config/php.ini:/usr/local/etc/php/php.ini
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_NAME=marina_ses
+      - DB_USER=marina_user
+      - DB_PASS=marina_pass123
+    networks:
+      - marina_network
+
+  db:
+    image: mysql:8.0
+    container_name: marina_ses_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: marina_ses
+      MYSQL_USER: marina_user
+      MYSQL_PASSWORD: marina_pass123
+      MYSQL_ROOT_PASSWORD: root_pass123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - marina_network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: marina_ses_phpmyadmin
+    restart: always
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: root_pass123
+    depends_on:
+      - db
+    networks:
+      - marina_network
+
+volumes:
+  mysql_data:
+
+networks:
+  marina_network:
+    driver: bridge
