@@ -14,6 +14,12 @@ services:
       - DB_NAME=marina_ses
       - DB_USER=marina_user
       - DB_PASS=marina_pass123
+      - SES_SMTP_HOST=email-smtp.ap-southeast-1.amazonaws.com
+      - SES_SMTP_PORT=587
+      - SES_SMTP_USERNAME=AKIAVLDYJGU3SPHJVZMO
+      - SES_SMTP_PASSWORD=BAaszv+G6wXGihJCLzXUyym4BLjv2ao2aRTK1UDiSIv0
+      - SES_FROM_EMAIL=admin-test@ssi-test.link
+      - SES_FROM_NAME=Marina Portal - TEST - SSI
     networks:
       - marina_network
 

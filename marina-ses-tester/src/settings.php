@@ -224,8 +224,70 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
     <script>
         function testConnection() {
-            // This would make an AJAX call to test the SMTP connection
-            alert('Connection test functionality would be implemented here.\n\nThis would:\n1. Validate SMTP credentials\n2. Test connection to SES\n3. Send a test email\n4. Report results');
+            const button = document.querySelector('button[onclick="testConnection()"]');
+            const originalText = button.textContent;
+            
+            // Disable button and show loading
+            button.disabled = true;
+            button.textContent = 'Testing...';
+            button.className = 'bg-gray-400 text-white py-2 px-6 rounded-md cursor-not-allowed';
+            
+            // Get form data
+            const formData = new FormData();
+            formData.append('smtp_host', document.getElementById('smtp_host').value);
+            formData.append('smtp_port', document.getElementById('smtp_port').value);
+            formData.append('smtp_username', document.getElementById('smtp_username').value);
+            formData.append('smtp_password', document.getElementById('smtp_password').value);
+            formData.append('from_email', document.getElementById('from_email').value);
+            
+            // Send AJAX request
+            fetch('test-connection.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Show result
+                const alertClass = data.success ? 'bg-green-100 border-green-400 text-green-700' : 'bg-red-100 border-red-400 text-red-700';
+                const alertHtml = `
+                    <div class="mb-6 p-4 rounded-md border ${alertClass}">
+                        ${data.message}
+                    </div>
+                `;
+                
+                // Insert alert before the form
+                const form = document.querySelector('form');
+                const existingAlert = document.querySelector('.mb-6.p-4.rounded-md.border');
+                if (existingAlert) {
+                    existingAlert.remove();
+                }
+                form.insertAdjacentHTML('beforebegin', alertHtml);
+                
+                // Restore button
+                button.disabled = false;
+                button.textContent = originalText;
+                button.className = 'bg-green-600 text-white py-2 px-6 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500';
+            })
+            .catch(error => {
+                // Show error
+                const alertHtml = `
+                    <div class="mb-6 p-4 rounded-md border bg-red-100 border-red-400 text-red-700">
+                        Connection test failed: ${error.message}
+                    </div>
+                `;
+                
+                const form = document.querySelector('form');
+                const existingAlert = document.querySelector('.mb-6.p-4.rounded-md.border');
+                if (existingAlert) {
+                    existingAlert.remove();
+                }
+                form.insertAdjacentHTML('beforebegin', alertHtml);
+                
+                // Restore button
+                button.disabled = false;
+                button.textContent = originalText;
+                button.className = 'bg-green-600 text-white py-2 px-6 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500';
+            });
         }
     </script>
 </body>

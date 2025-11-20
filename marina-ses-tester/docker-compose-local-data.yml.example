@@ -1,0 +1,27 @@
+# Example: Store MySQL data in project folder
+# Replace the volumes section in docker-compose.yml with this:
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: marina_ses_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: marina_ses
+      MYSQL_USER: marina_user
+      MYSQL_PASSWORD: marina_pass123
+      MYSQL_ROOT_PASSWORD: root_pass123
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./data/mysql:/var/lib/mysql  # ← Store in project folder
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - marina_network
+
+# Remove the volumes section at the bottom:
+# volumes:
+#   mysql_data:  # ← Remove this
+
+# This will create a ./data/mysql/ folder in your project
+# with all the database files visible and accessible
